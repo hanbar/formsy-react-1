@@ -248,7 +248,7 @@ class Formsy extends React.Component<FormsyProps, FormsyState> {
   // eslint-disable-next-line react/destructuring-assignment
   public isFormDisabled = () => this.props.disabled;
 
-  public mapModel = (model: IModel) => {
+  public mapModel = (model: IModel): IModel => {
     const { mapping } = this.props;
 
     if (mapping) {
@@ -274,7 +274,7 @@ class Formsy extends React.Component<FormsyProps, FormsyState> {
     this.resetModel(data);
   };
 
-  public resetInternal = event => {
+  private resetInternal = event => {
     const { onReset } = this.props;
 
     event.preventDefault();
@@ -339,6 +339,8 @@ class Formsy extends React.Component<FormsyProps, FormsyState> {
             .filter((x, pos, arr) => arr.indexOf(x) === pos); // remove duplicates
         }
 
+        // This line is not reachable
+        // istanbul ignore next
         return undefined;
       })(),
     };

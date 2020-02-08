@@ -16,7 +16,6 @@ export interface ValidationsStructure<V> {
 }
 export declare type RequiredValidation<V> = boolean | Validations<V>;
 export interface ComponentWithStaticAttributes extends ComponentClass {
-    string?: any;
     defaultValue?: any;
 }
 export declare type WrappedComponentClass = React.FC | ComponentWithStaticAttributes;

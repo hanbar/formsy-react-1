@@ -109,7 +109,7 @@ declare class Formsy extends React.Component<FormsyProps, FormsyState> {
     attachToForm: (component: any) => void;
     detachFromForm: <V>(component: InputComponent<V>) => void;
     isChanged: () => boolean;
-    submit: (event: any) => void;
+    submit: (event?: any) => void;
     updateInputsWithError: IUpdateInputsWithError;
     updateInputsWithValue: IUpdateInputsWithValue<any>;
     validate: <V>(component: InputComponent<V>) => void;
@@ -377,7 +377,7 @@ declare class Formsy extends React.Component<FormsyProps, FormsyState> {
         onTransitionEnd?: (event: React.TransitionEvent<HTMLFormElement>) => void;
         onTransitionEndCapture?: (event: React.TransitionEvent<HTMLFormElement>) => void;
         onReset: (event: any) => void;
-        onSubmit: (event: any) => void;
+        onSubmit: (event?: any) => void;
     }, HTMLElement>;
 }
 declare const addValidationRule: <V>(name: string, func: ValidationFunction<V>) => void;
