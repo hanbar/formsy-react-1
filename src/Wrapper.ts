@@ -9,12 +9,8 @@ import { RequiredValidation, Validations, WrappedComponentClass } from './interf
 const convertValidationsToObject = <V>(validations: false | Validations<V>): Validations<V> => {
   if (typeof validations === 'string') {
     return validations.split(/,(?![^{[]*[}\]])/g).reduce((validationsAccumulator, validation) => {
-      let args = validation.split(':');
-      const validateMethod = args.shift();
-
-      if (typeof validateMethod !== 'string') {
-        throw new Error('Formsy encountered unexpected problem parsing validation string');
-      }
+      let args: string[] = validation.split(':');
+      const validateMethod: string = args.shift();
 
       args = args.map(arg => {
         try {
@@ -88,6 +84,12 @@ export interface InjectedProps<V> {
   showRequired: boolean;
 }
 
+export interface WrapperInstanceMethods {
+  isValid: () => boolean;
+  getValue: () => any;
+  getErrorMessage: () => any;
+}
+
 export type PassDownProps<V> = WrapperProps<V> & InjectedProps<V>;
 
 export { propTypes };
@@ -103,7 +105,7 @@ function getDisplayName(component: WrappedComponentClass) {
 export default function<T, V>(
   WrappedComponent: React.ComponentType<T & PassDownProps<V>>,
 ): React.ComponentType<Omit<T & WrapperProps<V>, keyof InjectedProps<V>>> {
-  return class extends React.Component<T & WrapperProps<V>, WrapperState<V>> {
+  return class extends React.Component<T & WrapperProps<V>, WrapperState<V>> implements WrapperInstanceMethods {
     public validations?: Validations<V>;
 
     public requiredValidations?: Validations<V>;
@@ -287,7 +289,7 @@ export default function<T, V>(
 
     public render() {
       const { innerRef } = this.props;
-      const propsForElement: PassDownProps<V> = {
+      const propsForElement: T & PassDownProps<V> = {
         ...this.props,
         errorMessage: this.getErrorMessage(),
         errorMessages: this.getErrorMessages(),
@@ -310,7 +312,7 @@ export default function<T, V>(
         propsForElement.ref = innerRef;
       }
 
-      return React.createElement(WrappedComponent, propsForElement as any);
+      return React.createElement(WrappedComponent, propsForElement);
     }
   };
 }
