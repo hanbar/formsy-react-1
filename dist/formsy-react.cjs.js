@@ -1548,6 +1548,24 @@ function runRules(value, currentValues, validations, validationRules) {
   return results;
 }
 
+var utils = /*#__PURE__*/Object.freeze({
+  __proto__: null,
+  isArray: isArray,
+  isObject: isObject,
+  isTypeUndefined: isTypeUndefined,
+  isDate: isDate,
+  isFunction: isFunction,
+  isString: isString,
+  isNumber: isNumber,
+  isValueStringEmpty: isValueStringEmpty,
+  isValueNullOrUndefined: isValueNullOrUndefined,
+  isValueUndefined: isValueUndefined,
+  noop: noop,
+  cloneIfObject: cloneIfObject,
+  isSame: isSame,
+  runRules: runRules
+});
+
 var _isExisty = function isExisty(value) {
   return !isValueNullOrUndefined(value);
 };
@@ -2459,6 +2477,7 @@ var addValidationRule = function addValidationRule(name, func) {
 exports.addValidationRule = addValidationRule;
 exports.default = Formsy;
 exports.propTypes = propTypes$1;
+exports.utils = utils;
 exports.validationRules = validations;
 exports.withFormsy = Wrapper;
 //# sourceMappingURL=formsy-react.cjs.js.map

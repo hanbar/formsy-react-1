@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import * as utils from './utils';
 import validationRules from './validationRules';
 import Wrapper, { propTypes } from './Wrapper';
 import { IModel, InputComponent, IResetModel, IUpdateInputsWithValue, IUpdateInputsWithError, ValidationFunction } from './interfaces';
@@ -385,5 +386,5 @@ declare class Formsy extends React.Component<FormsyProps, FormsyState> {
     }, HTMLElement>;
 }
 declare const addValidationRule: <V>(name: string, func: ValidationFunction<V>) => void;
-export { addValidationRule, propTypes, validationRules, Wrapper as withFormsy };
+export { addValidationRule, propTypes, validationRules, utils, Wrapper as withFormsy };
 export default Formsy;
