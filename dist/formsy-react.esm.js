@@ -1564,6 +1564,14 @@ var validations = {
       return isValueStringEmpty(value);
     }
 
+    if (typeof value === 'boolean') {
+      return value === false;
+    }
+
+    if (Array.isArray(value)) {
+      return value.length === 0;
+    }
+
     return isValueNullOrUndefined(value);
   },
   isExisty: function isExisty(_values, value) {
@@ -2121,6 +2129,7 @@ function (_React$Component) {
       return {
         isRequired: isRequired,
         isValid: isRequired ? false : isValid,
+        isValidWithoutRequire: isValid,
         error: function () {
           if (isValid && !isRequired) {
             return _this.emptyArray;
@@ -2178,8 +2187,11 @@ function (_React$Component) {
       var _this$props2 = _this.props,
           onSubmit = _this$props2.onSubmit,
           onValidSubmit = _this$props2.onValidSubmit,
-          onInvalidSubmit = _this$props2.onInvalidSubmit;
-      var isValid = _this.state.isValid;
+          onInvalidSubmit = _this$props2.onInvalidSubmit,
+          onValidSubmitIgnoreRequired = _this$props2.onValidSubmitIgnoreRequired;
+      var _this$state = _this.state,
+          isValid = _this$state.isValid,
+          isValidWithoutRequire = _this$state.isValidWithoutRequire;
 
       if (event && event.preventDefault) {
         event.preventDefault();
@@ -2196,6 +2208,8 @@ function (_React$Component) {
 
       if (isValid) {
         onValidSubmit(model, _this.resetModel, _this.updateInputsWithError);
+      } else if (isValidWithoutRequire && !isValid) {
+        onValidSubmitIgnoreRequired(model, _this.resetModel, _this.updateInputsWithError);
       } else {
         onInvalidSubmit(model, _this.resetModel, _this.updateInputsWithError);
       }
@@ -2261,6 +2275,7 @@ function (_React$Component) {
         externalError: null,
         isRequired: validation.isRequired,
         isValid: validation.isValid,
+        isValidWithoutRequire: validation.isValidWithoutRequire,
         validationError: validation.error
       }, _this.validateForm);
     };
@@ -2273,11 +2288,16 @@ function (_React$Component) {
           return component.state.isValid;
         });
 
+        var allIsValidWithoutRequire = _this.inputs.every(function (component) {
+          return component.state.isValidWithoutRequire;
+        });
+
         _this.setFormValidState(allIsValid); // Tell the form that it can start to trigger change events
 
 
         _this.setState({
-          canChange: true
+          canChange: true,
+          isValidWithoutRequire: allIsValidWithoutRequire
         });
       }; // Run validation again in case affected by other inputs. The
       // last component validated will run the onValidationComplete callback
@@ -2293,6 +2313,7 @@ function (_React$Component) {
         component.setState({
           isValid: validation.isValid,
           isRequired: validation.isRequired,
+          isValidWithoutRequire: validation.isValidWithoutRequire,
           validationError: validation.error,
           externalError: !validation.isValid && component.state.externalError ? component.state.externalError : null
         }, index === _this.inputs.length - 1 ? onValidationComplete : null);
@@ -2323,6 +2344,7 @@ function (_React$Component) {
           onChange = _this$props3.onChange,
           onInvalid = _this$props3.onInvalid,
           onInvalidSubmit = _this$props3.onInvalidSubmit,
+          onValidSubmitIgnoreRequired = _this$props3.onValidSubmitIgnoreRequired,
           onReset = _this$props3.onReset,
           onSubmit = _this$props3.onSubmit,
           onValid = _this$props3.onValid,
@@ -2334,7 +2356,7 @@ function (_React$Component) {
           showError = _this$props3.showError,
           showRequired = _this$props3.showRequired,
           validationErrors = _this$props3.validationErrors,
-          nonFormsyProps = _objectWithoutProperties(_this$props3, ["getErrorMessage", "getErrorMessages", "getValue", "hasValue", "isFormDisabled", "isFormSubmitted", "isPristine", "isRequired", "isValid", "isValidValue", "mapping", "onChange", "onInvalid", "onInvalidSubmit", "onReset", "onSubmit", "onValid", "onValidSubmit", "preventExternalInvalidation", "resetValue", "setValidations", "setValue", "showError", "showRequired", "validationErrors"]);
+          nonFormsyProps = _objectWithoutProperties(_this$props3, ["getErrorMessage", "getErrorMessages", "getValue", "hasValue", "isFormDisabled", "isFormSubmitted", "isPristine", "isRequired", "isValid", "isValidValue", "mapping", "onChange", "onInvalid", "onInvalidSubmit", "onValidSubmitIgnoreRequired", "onReset", "onSubmit", "onValid", "onValidSubmit", "preventExternalInvalidation", "resetValue", "setValidations", "setValue", "showError", "showRequired", "validationErrors"]);
 
       return React.createElement('form', _objectSpread2({
         onReset: _this.resetInternal,
@@ -2348,7 +2370,8 @@ function (_React$Component) {
     _this.state = {
       canChange: false,
       isSubmitting: false,
-      isValid: true
+      isValid: true,
+      isValidWithoutRequire: true
     };
     _this.inputs = [];
     _this.emptyArray = [];
@@ -2375,6 +2398,7 @@ Formsy.propTypes = {
   onChange: propTypes.func,
   onInvalid: propTypes.func,
   onInvalidSubmit: propTypes.func,
+  onValidSubmitIgnoreRequired: propTypes.func,
   onReset: propTypes.func,
   onSubmit: propTypes.func,
   onValid: propTypes.func,
@@ -2408,6 +2432,7 @@ Formsy.defaultProps = {
   onError: noop,
   onInvalid: noop,
   onInvalidSubmit: noop,
+  onValidSubmitIgnoreRequired: noop,
   onReset: noop,
   onSubmit: noop,
   onValid: noop,

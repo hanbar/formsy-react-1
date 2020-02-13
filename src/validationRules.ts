@@ -28,6 +28,12 @@ const validations: Validations<any> = {
     if (isString(value)) {
       return isValueStringEmpty(value);
     }
+    if (typeof value === 'boolean') {
+      return value === false;
+    }
+    if (Array.isArray(value)) {
+      return value.length === 0;
+    }
     return isValueNullOrUndefined(value);
   },
   isExisty<V>(_values: Values, value: V) {

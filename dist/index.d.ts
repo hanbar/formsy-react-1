@@ -21,6 +21,7 @@ export interface FormsyProps extends FormHTMLAttributesCleaned {
     onError: any;
     onInvalid: () => void;
     onInvalidSubmit: any;
+    onValidSubmitIgnoreRequired?: (model: IModel, resetModel: IResetModel, updateInputsWithError: IUpdateInputsWithError) => void;
     onReset?: () => void;
     onSubmit?: (model: IModel, resetModel: IResetModel, updateInputsWithError: IUpdateInputsWithError) => void;
     onValid: () => void;
@@ -39,6 +40,7 @@ export interface FormsyState {
     isPristine?: boolean;
     isSubmitting: boolean;
     isValid: boolean;
+    isValidWithoutRequire: boolean;
 }
 declare class Formsy extends React.Component<FormsyProps, FormsyState> {
     inputs: any[];
@@ -61,6 +63,7 @@ declare class Formsy extends React.Component<FormsyProps, FormsyState> {
         onChange: PropTypes.Requireable<(...args: any[]) => any>;
         onInvalid: PropTypes.Requireable<(...args: any[]) => any>;
         onInvalidSubmit: PropTypes.Requireable<(...args: any[]) => any>;
+        onValidSubmitIgnoreRequired: PropTypes.Requireable<(...args: any[]) => any>;
         onReset: PropTypes.Requireable<(...args: any[]) => any>;
         onSubmit: PropTypes.Requireable<(...args: any[]) => any>;
         onValid: PropTypes.Requireable<(...args: any[]) => any>;
@@ -104,6 +107,7 @@ declare class Formsy extends React.Component<FormsyProps, FormsyState> {
     runValidation: <V>(component: InputComponent<V>, value?: V) => {
         isRequired: boolean;
         isValid: boolean;
+        isValidWithoutRequire: boolean;
         error: any;
     };
     attachToForm: (component: any) => void;

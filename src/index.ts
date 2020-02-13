@@ -36,6 +36,7 @@ export interface FormsyProps extends FormHTMLAttributesCleaned {
   onError: any;
   onInvalid: () => void;
   onInvalidSubmit: any;
+  onValidSubmitIgnoreRequired?: (model: IModel, resetModel: IResetModel, updateInputsWithError: IUpdateInputsWithError) => void;
   onReset?: () => void;
   onSubmit?: (model: IModel, resetModel: IResetModel, updateInputsWithError: IUpdateInputsWithError) => void;
   onValid: () => void;
@@ -55,6 +56,7 @@ export interface FormsyState {
   isPristine?: boolean;
   isSubmitting: boolean;
   isValid: boolean;
+  isValidWithoutRequire: boolean,
 }
 
 class Formsy extends React.Component<FormsyProps, FormsyState> {
@@ -82,6 +84,7 @@ class Formsy extends React.Component<FormsyProps, FormsyState> {
     onChange: PropTypes.func,
     onInvalid: PropTypes.func,
     onInvalidSubmit: PropTypes.func,
+    onValidSubmitIgnoreRequired: PropTypes.func,
     onReset: PropTypes.func,
     onSubmit: PropTypes.func,
     onValid: PropTypes.func,
@@ -116,6 +119,7 @@ class Formsy extends React.Component<FormsyProps, FormsyState> {
     onError: utils.noop,
     onInvalid: utils.noop,
     onInvalidSubmit: utils.noop,
+    onValidSubmitIgnoreRequired: utils.noop,
     onReset: utils.noop,
     onSubmit: utils.noop,
     onValid: utils.noop,
@@ -135,6 +139,7 @@ class Formsy extends React.Component<FormsyProps, FormsyState> {
       canChange: false,
       isSubmitting: false,
       isValid: true,
+      isValidWithoutRequire: true,
     };
     this.inputs = [];
     this.emptyArray = [];
@@ -309,6 +314,7 @@ class Formsy extends React.Component<FormsyProps, FormsyState> {
     return {
       isRequired,
       isValid: isRequired ? false : isValid,
+      isValidWithoutRequire: isValid,
       error: (() => {
         if (isValid && !isRequired) {
           return this.emptyArray;
@@ -371,8 +377,8 @@ class Formsy extends React.Component<FormsyProps, FormsyState> {
 
   // Update model, submit to url prop and send the model
   public submit = event => {
-    const { onSubmit, onValidSubmit, onInvalidSubmit } = this.props;
-    const { isValid } = this.state;
+    const { onSubmit, onValidSubmit, onInvalidSubmit, onValidSubmitIgnoreRequired } = this.props;
+    const { isValid, isValidWithoutRequire } = this.state;
 
     if (event && event.preventDefault) {
       event.preventDefault();
@@ -386,6 +392,8 @@ class Formsy extends React.Component<FormsyProps, FormsyState> {
     onSubmit(model, this.resetModel, this.updateInputsWithError);
     if (isValid) {
       onValidSubmit(model, this.resetModel, this.updateInputsWithError);
+    } else if (isValidWithoutRequire && !isValid) {
+      onValidSubmitIgnoreRequired(model, this.resetModel, this.updateInputsWithError);
     } else {
       onInvalidSubmit(model, this.resetModel, this.updateInputsWithError);
     }
@@ -451,6 +459,7 @@ class Formsy extends React.Component<FormsyProps, FormsyState> {
         externalError: null,
         isRequired: validation.isRequired,
         isValid: validation.isValid,
+        isValidWithoutRequire: validation.isValidWithoutRequire,
         validationError: validation.error,
       },
       this.validateForm,
@@ -465,11 +474,14 @@ class Formsy extends React.Component<FormsyProps, FormsyState> {
     const onValidationComplete = () => {
       const allIsValid = this.inputs.every(component => component.state.isValid);
 
+      const allIsValidWithoutRequire = this.inputs.every(component => component.state.isValidWithoutRequire);
+
       this.setFormValidState(allIsValid);
 
       // Tell the form that it can start to trigger change events
       this.setState({
         canChange: true,
+        isValidWithoutRequire: allIsValidWithoutRequire,
       });
     };
 
@@ -484,6 +496,7 @@ class Formsy extends React.Component<FormsyProps, FormsyState> {
         {
           isValid: validation.isValid,
           isRequired: validation.isRequired,
+          isValidWithoutRequire: validation.isValidWithoutRequire,
           validationError: validation.error,
           externalError: !validation.isValid && component.state.externalError ? component.state.externalError : null,
         },
@@ -517,6 +530,7 @@ class Formsy extends React.Component<FormsyProps, FormsyState> {
       onChange,
       onInvalid,
       onInvalidSubmit,
+      onValidSubmitIgnoreRequired,
       onReset,
       onSubmit,
       onValid,
