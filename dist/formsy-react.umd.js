@@ -1426,7 +1426,7 @@
     return Array.isArray(value);
   }
   function isObject(value) {
-    return value !== null && _typeof(value) === 'object';
+    return value !== null && _typeof(value) === 'object' && !Array.isArray(value);
   }
   function isTypeUndefined(value) {
     return typeof value === 'undefined';
@@ -1951,6 +1951,8 @@
     }, _temp;
   }
 
+  var waiting;
+
   var Formsy =
   /*#__PURE__*/
   function (_React$Component) {
@@ -2301,7 +2303,10 @@
           isValid: validation.isValid,
           isValidWithoutRequire: validation.isValidWithoutRequire,
           validationError: validation.error
-        }, _this.validateForm);
+        }, function () {
+          clearTimeout(waiting);
+          waiting = setTimeout(_this.validateForm, 500);
+        });
       };
 
       _this.validateForm = function () {

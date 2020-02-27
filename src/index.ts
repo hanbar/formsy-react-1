@@ -56,8 +56,10 @@ export interface FormsyState {
   isPristine?: boolean;
   isSubmitting: boolean;
   isValid: boolean;
-  isValidWithoutRequire: boolean,
+  isValidWithoutRequire: boolean;
 }
+
+let waiting;
 
 class Formsy extends React.Component<FormsyProps, FormsyState> {
   public inputs: any[];
@@ -462,7 +464,10 @@ class Formsy extends React.Component<FormsyProps, FormsyState> {
         isValidWithoutRequire: validation.isValidWithoutRequire,
         validationError: validation.error,
       },
-      this.validateForm,
+      () => {
+        clearTimeout(waiting);
+        waiting = setTimeout(this.validateForm, 500);
+      }
     );
   };
 

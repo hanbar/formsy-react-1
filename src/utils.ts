@@ -5,7 +5,7 @@ export function isArray(value: unknown): value is unknown[] {
 }
 
 export function isObject(value: unknown): value is object {
-  return value !== null && typeof value === 'object';
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
 export function isTypeUndefined(value: unknown): value is undefined {
